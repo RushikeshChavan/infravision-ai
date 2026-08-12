@@ -83,7 +83,7 @@ The system supports seven roles. For the primary hackathon demonstration, Super 
 - **Responsibilities:** Conduct field inspections, log GPS-tagged progress updates, flag discrepancies.
 - **Information needed:** Assigned project plans, milestone definitions, prior inspection history, site locations.
 - **Can do:** Submit inspection reports with GPS-tagged location and photo evidence, flag issues, update field-level milestone status.
-- **Must NOT access:** Budget data or approval functions, contractor payment data, projects not assigned to them.
+- **Must NOT access:** Budget modification, allocation, distribution, or approval functions; contractor payment data; projects not assigned to them. Field Engineers may have limited read-only budget visibility where required for their assigned project.
 
 ### 7.5 Contractor
 
@@ -149,9 +149,9 @@ The system supports seven roles. For the primary hackathon demonstration, Super 
 ### 8.6 Budget Management (Admin-Only Distribution)
 
 - **Purpose:** Control planned budget allocation and distribution, distinct from viewing or monitoring budget data.
-- **Main users:** Super Admin, Department Admin. No other role manages or controls budget distribution.
-- **Key capabilities:** Allocate and distribute budget across projects/phases/categories (admin-only); record expenditures; compute variance.
-- **Business rules:** Only Super Admin and Department Admin can create, modify, or distribute budget allocations. Project Manager, Field Engineer, Contractor, and Auditor may have appropriate read-only access to budget information through Section 8.7 (Budget Monitoring), but they do not manage or control budget distribution here. This module is distinct from the public transparency figures in Section 8.7, which exposes only high-level, citizen-safe data.
+- **Main users:** Super Admin, Department Admin (management/distribution); Project Manager, Field Engineer, Contractor, Auditor (read-only monitoring, scoped by role).
+- **Key capabilities:** Allocate and distribute budget across projects/phases/categories (admin-only); record and view expenditures; compute variance.
+- **Business rules:** Only Super Admin and Department Admin can create, modify, or distribute budget allocations. All other internal roles may view budget information relevant to their scope but cannot modify it. This module is distinct from Section 8.7 (public transparency), which exposes only high-level, citizen-safe figures.
 
 ### 8.7 Budget Monitoring and Public Transparency
 
@@ -315,14 +315,14 @@ InfraVision AI includes three must-have AI capabilities, each bound by the secur
 
 ## 14. Reporting
 
-| Report                         | Purpose                                                         | Who Can Generate                                    |
-| ------------------------------ | --------------------------------------------------------------- | --------------------------------------------------- |
-| Project progress report        | Detailed status and milestone progress for a project            | Project Manager, Department Admin, Super Admin      |
-| Budget utilization report      | Planned vs. actual spend for a project or department            | Department Admin, Auditor, Super Admin              |
-| Contractor performance report  | Delivery and reliability history for a contractor               | Department Admin, Super Admin                       |
-| Delayed project report         | List and detail of projects behind schedule                     | Department Admin, Project Manager, Super Admin      |
-| Department summary             | Portfolio-level overview for a department                       | Department Admin, Super Admin                       |
-| Citizen/public project summary | Public-safe summary of a project's status and high-level budget | Auto-generated for public access; no login required |
+| Report Purpose Who Can Generate  |                                                                 |                                                     |
+| -------------------------------- | --------------------------------------------------------------- | --------------------------------------------------- |
+| Project progress report          | Detailed status and milestone progress for a project            | Project Manager, Department Admin, Super Admin      |
+| Budget utilization report        | Planned vs. actual spend for a project or department            | Department Admin, Auditor, Super Admin              |
+| Contractor performance report    | Delivery and reliability history for a contractor               | Department Admin, Super Admin                       |
+| Delayed project report           | List and detail of projects behind schedule                     | Department Admin, Project Manager, Super Admin      |
+| Department summary               | Portfolio-level overview for a department                       | Department Admin, Super Admin                       |
+| Citizen/public project summary   | Public-safe summary of a project's status and high-level budget | Auto-generated for public access; no login required |
 
 ## 15. Security Principles
 
@@ -336,7 +336,6 @@ InfraVision AI includes three must-have AI capabilities, each bound by the secur
 - **Protection against unauthorized API access:** All API endpoints enforce authentication and authorization checks server-side.
 - **Rate limiting:** Public endpoints and AI endpoints are rate-limited to prevent abuse.
 - **Secure AI data access and layered architecture:** AI components never connect directly to the database or receive unrestricted data access. All AI data flows follow a fixed layered path:
-
   ```
   Database
     ↓
@@ -351,10 +350,9 @@ InfraVision AI includes three must-have AI capabilities, each bound by the secur
   Response filtering
     ↓
   User
+
   ```
-
   The citizen AI chatbot only receives data cleared through the public-safe data access layer. The admin AI assistant only receives data authorized for the specific logged-in administrator, scoped exactly as the rest of the platform scopes that user. In neither case does the AI itself decide what it is allowed to see — access is determined before the data ever reaches the AI context layer, and again filtered before the response reaches the user.
-
 - **AI is never an authorization mechanism:** The AI must never be relied upon to enforce access control, grant permissions, or decide what a user is allowed to see. Authorization is always enforced by the role/authorization layer, independent of and prior to any AI involvement.
 
 ## 16. Non-Functional Requirements
@@ -380,7 +378,6 @@ InfraVision AI includes three must-have AI capabilities, each bound by the secur
 - Budget monitoring (role-scoped, read-only where applicable) and admin-only budget distribution
 - Contractor management
 - Document repository
-- Role-based dashboards
 - Audit logging
 
 **Analytics:**
@@ -417,7 +414,6 @@ InfraVision AI includes three must-have AI capabilities, each bound by the secur
 
 **Citizen:**
 
-- Citizen portal
 - Public project search and map
 - Project status, progress, milestones, expected completion
 - High-level public budget information
@@ -502,11 +498,9 @@ This stack is treated as fixed direction for this project unless a specific requ
 
 ## 23. Architecture Decisions Requiring Confirmation
 
-The following decisions are confirmed and now govern the remainder of the architecture:
-
-1. **Public budget granularity:** Citizens see high-level approved budget, public utilization amount/percentage, and public budget status. Sensitive line-item financial information remains private.
-2. **Evidence requirements:** For MVP, milestone/progress completion should use evidence where feasible. Field inspections capture timestamp and GPS coordinates and may include photo/document evidence.
-3. **Contractor performance visibility:** Contractors may see basic performance indicators for their own assigned projects. Detailed AI assessment and internal risk analysis remain admin-only.
-4. **Citizen chatbot data:** The citizen AI retrieves only explicitly public-safe data through an authorized public data access/service layer, and must never directly access unrestricted internal collections.
-5. **Auditor scope:** Auditors are read-only and can be assigned to one or more authorized departments/projects.
-6. **MVP roles:** Primary demonstrated dashboards are Super Admin, Department Admin, Project Manager/Engineer, Contractor, and Citizen. Field Engineer and Auditor remain supported roles with simpler MVP interfaces if necessary.
+1. **Public budget field finalization:** The exact set of publicly releasable budget fields (approved budget, utilization, utilization percentage) is confirmed at a high level — should any additional high-level field (e.g., number of active contractors, project phase) also be public, or should the public view remain limited to the three confirmed figures?
+2. **Milestone evidence enforcement:** Should GPS-tagged evidence be mandatory for all milestone completions, or only for milestones above a defined significance threshold, given hackathon time constraints?
+3. **Auditor department assignment model:** Should an Auditor be assignable to multiple departments/projects simultaneously for MVP, or scoped to a single department for simplicity, with multi-department support deferred?
+4. **Field Engineer and Auditor MVP depth:** Both roles are confirmed as architecturally required — how much dashboard functionality (beyond basic views) should be built for the MVP demo versus represented as "Should Have if Time Permits"?
+5. **Public-safe data layer implementation approach:** Should the AI chatbot's public-safe data access layer be a distinct, explicitly-synced public dataset, or a strictly filtered view over the same underlying collections? This is a security/complexity trade-off to resolve in the next architecture phase.
+6. **Contractor own-performance view detail:** Beyond milestone completion and schedule performance, is there any additional basic indicator contractors should see about their own performance, short of the admin-only AI assessment?

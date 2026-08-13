@@ -4,6 +4,12 @@ import cors from "cors";
 import healthRouter from "./routes/health";
 import authRouter from "./routes/auth";
 import protectedRouter from "./routes/protected";
+import projectRouter from "./routes/projects";
+import milestoneRouter from "./routes/milestones";
+import budgetRouter from "./routes/budgets";
+import contractorRouter from "./routes/contractors";
+import inspectionRouter from "./routes/inspections";
+import documentRouter from "./routes/documents";
 import requestLogger from "./middleware/requestLogger";
 
 const app = express();
@@ -16,6 +22,12 @@ app.use(requestLogger);
 app.use("/api/health", healthRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/protected", protectedRouter);
+app.use("/api/projects", projectRouter);
+app.use("/api/milestones", milestoneRouter);
+app.use("/api/budgets", budgetRouter);
+app.use("/api/contractors", contractorRouter);
+app.use("/api/inspections", inspectionRouter);
+app.use("/api/documents", documentRouter);
 
 // Centralized error handler (basic)
 app.use(

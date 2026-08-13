@@ -12,12 +12,22 @@ export const DOCUMENT_TYPES = [
 
 export type DocumentType = (typeof DOCUMENT_TYPES)[number];
 
+export const DOCUMENT_CLASSIFICATIONS = [
+  "PUBLIC",
+  "INTERNAL",
+  "RESTRICTED",
+  "CONFIDENTIAL",
+] as const;
+
+export type DocumentClassification = (typeof DOCUMENT_CLASSIFICATIONS)[number];
+
 export interface IDocument extends Document {
   project: Types.ObjectId;
   uploadedBy: Types.ObjectId;
   documentType: DocumentType;
   fileName: string;
   fileUrl: string;
+  classification: DocumentClassification;
   description?: string;
   uploadedAt: Date;
   createdAt: Date;
@@ -44,6 +54,12 @@ const documentSchema = new Schema<IDocument>(
     },
     fileName: { type: String, required: true, trim: true },
     fileUrl: { type: String, required: true, trim: true },
+    classification: {
+      type: String,
+      enum: DOCUMENT_CLASSIFICATIONS,
+      required: true,
+      default: "INTERNAL",
+    },
     description: { type: String, trim: true },
     uploadedAt: { type: Date, default: Date.now },
   },

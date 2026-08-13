@@ -24,9 +24,9 @@ export const authz = {
   allowProjectTeam: authorize([
     USER_ROLES.SUPER_ADMIN,
     USER_ROLES.DEPARTMENT_ADMIN,
-    USER_ROLES.PROJECT_MANAGER_ENGINEER,
+    USER_ROLES.PROJECT_MANAGER,
   ]),
   allowContractor: authorize([USER_ROLES.CONTRACTOR]),
   allowAuditor: authorize([USER_ROLES.AUDITOR]),
-  allowFieldEngineer: authorize([USER_ROLES.FIELD_ENGINEER_INSPECTOR]),
+  allowFieldEngineer: authorize([USER_ROLES.FIELD_ENGINEER]),
 };

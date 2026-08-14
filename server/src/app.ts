@@ -10,6 +10,7 @@ import budgetRouter from "./routes/budgets";
 import contractorRouter from "./routes/contractors";
 import inspectionRouter from "./routes/inspections";
 import documentRouter from "./routes/documents";
+import userRouter from "./routes/users";
 import requestLogger from "./middleware/requestLogger";
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(requestLogger);
 
 app.use("/api/health", healthRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/users", userRouter);
 app.use("/api/protected", protectedRouter);
 app.use("/api/projects", projectRouter);
 app.use("/api/milestones", milestoneRouter);

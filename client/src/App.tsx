@@ -1,10 +1,14 @@
 import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { AppRoutes } from "./routes/AppRoutes";
 
 export default function App() {
   return (
-    <div className="app">
-      <h1>InfraVision AI — Phase 1</h1>
-      <p>Client scaffold running.</p>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
